@@ -4,7 +4,6 @@ public class City {
     public double x;    // Store position x of city
     public double y;    // Store position y of city
     public int name;    // Store name of city
-    ArrayList<Double> paths = new ArrayList<Double>();
     
     public City(int name, double x, double y){
         this.x = x;
