@@ -108,32 +108,36 @@ public class GA {
         // 1. use this.newPopulation fot mutation
         // 2. random Probability value for mutation
         // 3. random 2 position fot Inversion mutation
-        ArrayList<City> keep = new ArrayList<City>();
-        Path onePath = new Path();
-        int point1 = 0, point2 = 0;
+        ArrayList<City> keep = new ArrayList<City>();   // create Object for save city from Path
+        Path onePath = new Path();                      // create Object for save population from newPopulation
+        int point1 = 0, point2 = 0;                     // create Object for pointer point where will flip
+        double Ran = 0;                                 // create Object for save MATH.RANDOM()
         for (int i = 0 ; i < this.newPopulation.size() ; i++){
-            if (Math.random() <= 0.1){
-                while( point1 == point2 ){
-                    point1 = (int)((Math.random())*this.cities.size());
-                    point2 = (int)((Math.random())*this.cities.size());
+            Ran = Math.random();                        // Random math for ค่าโอกาศเกิด
+            println ("prop "+Ran);                      
+            if (Ran <= 0.1){                            
+                onePath = this.newPopulation.get(i);    // Add newPopulation into onePath
+                while(point1 == point2) {               // Check same pointer (at first 0 = 0)
+                    point1 = (int) (Math.random() * onePath.path.size()); // random pointer for point1
+                    point2 = (int) (Math.random() * onePath.path.size()); // random pointer for point2
                 }
-                if ( point1 > point2 ){
-                    int point = point1;
-                    point1 = point2;
-                    point2 = point;
+                if ( point1 > point2 ){                 // Check point where more than
+                    int point = point1;                 // set point1 to point
+                    point1 = point2;                    // set point2 to point1
+                    point2 = point;                     // set point  to point2
                 }
-                onePath = this.newPopulation.get(i);
-                keep = onePath.path;
-                int mutain =  (int)(((point2-point1+1)/2));
-                for( int j = point1 ; j < point1+mutain ; j++ ){
-                    City swap = keep.get(j);
-                    keep.set(j, keep.get(point2));
-                    keep.set(point2, swap);
-                    point2 = point2 - 1 ;
+                keep = onePath.path;                    // add city from path to keep
+                int mutain =  (int)(((point2-point1+1)/2));       // cal how many round to swap
+                for( int j = point1 ; j < point1+mutain ; j++ ){  // loop and plus front pointer        
+                    City swap = keep.get(j);            // Add front city into swap
+                    keep.set(j, keep.get(point2));      // Add back  city into front city
+                    keep.set(point2, swap);             // Add swap       into back city
+                    point2 = point2 - 1 ;               // minus back pointer 
                 }
-                onePath.path = keep;
-                this.newPopulation.set(i, onePath);
+                onePath.path = keep;                    // Add city back to path
+                this.newPopulation.set(i, onePath);     // Add path back to population
             }
+            
             
         }
         
@@ -181,6 +185,8 @@ public class GA {
         for(Path P:test.population) {
             println(P);
         } */
+        
+        /// KUNG \\\
         Path path1 = new Path();
         Path path2 = new Path();
         ArrayList<City> newCity1 = new ArrayList<City>();
@@ -198,6 +204,20 @@ public class GA {
         println("Crossover");
         println("C1 : " + test.newPopulation.get(0));
         println("C2 : " + test.newPopulation.get(1));
+        
+        //// BOOK \\\
+        GA test2 = new GA();
+        for(int i = 0; i < 8; i++)
+            test2.cities.add(new City(i, 12, 12));
+        test2.initPopulation();
+        println("Test2.1 : "+test2.population.get(0));
+        println("Test2.2 : "+test2.population.get(1));
+        test2.newPopulation.add(test2.population.get(0));
+        test2.newPopulation.add(test2.population.get(1));
+        test2.mutation();
+        for(Path p:test2.newPopulation){
+            println (p) ;
+        }
     }
     
 }
