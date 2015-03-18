@@ -11,6 +11,7 @@ public class City {
         this.name = name;
     }
     
+    // This function used to calculate distance between 2 City
     public double distanceTo(City destination){
         return (double)Math.sqrt(Math.pow(this.x - destination.x, 2) + Math.pow(this.y - destination.y, 2));
     }
