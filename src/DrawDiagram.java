@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -12,14 +13,21 @@ import javax.swing.Timer;
 class DrawDiagram extends JPanel implements ActionListener{
     Timer tm = new Timer(0, this);
     int x=0, velX = 2;
+    public ArrayList<City> cities = new ArrayList<City>();
     
     @Override
     public void paintComponent(Graphics g){     // draw diagram
-        g.setColor(Color.red);
-        g.drawString("BLAH1", 20, 20);
-        g.drawString("BLAH2", 20, 40);
-        g.drawRect(x, 50, 50, 50);
-        //tm.start();
+        for(int i=0; i<this.cities.size(); i++){
+            for(int j=0; j<this.cities.size(); j++){
+                g.setColor(new Color(181, 181, 181));
+                if(i != j){
+                    City c1 = this.cities.get(i);
+                    City c2 = this.cities.get(j);
+                    g.drawLine((int)c1.x, (int)c1.y, (int)c2.x, (int)c2.y);
+                }
+            }
+        }
+        
     }
     
     public void setAnimate(){   // is used for start animate
