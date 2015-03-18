@@ -26,7 +26,6 @@ public class GA {
     public void select(){
         //------WRITE--CODE--BELOW-------
         /*====VVVVVVVVVVVVVVVVVVVVVVV====
-        *=======VVVVVVVVVVVVVVVVVV=======
         *==========VVVVVVVVVVVV==========
         *=============VVVVVV=============
         *===============VV===============
@@ -85,7 +84,6 @@ public class GA {
         newPopulation = newGen;
         //------WRITE--CODE--BELOW-------
         /*====VVVVVVVVVVVVVVVVVVVVVVV====
-        *=======VVVVVVVVVVVVVVVVVV=======
         *==========VVVVVVVVVVVV==========
         *=============VVVVVV=============
         *===============VV===============
@@ -103,7 +101,6 @@ public class GA {
     public void mutation(){
         //------WRITE--CODE--BELOW-------
         /*====VVVVVVVVVVVVVVVVVVVVVVV====
-        *=======VVVVVVVVVVVVVVVVVV=======
         *==========VVVVVVVVVVVV==========
         *=============VVVVVV=============
         *===============VV===============
@@ -111,8 +108,34 @@ public class GA {
         // 1. use this.newPopulation fot mutation
         // 2. random Probability value for mutation
         // 3. random 2 position fot Inversion mutation
-        
-        
+        ArrayList<City> keep = new ArrayList<City>();
+        Path onePath = new Path();
+        int point1 = 0, point2 = 0;
+        for (int i = 0 ; i < this.newPopulation.size() ; i++){
+            if (Math.random() <= 0.1){
+                while( point1 == point2 ){
+                    point1 = (int)((Math.random())*this.cities.size());
+                    point2 = (int)((Math.random())*this.cities.size());
+                }
+                if ( point1 > point2 ){
+                    int point = point1;
+                    point1 = point2;
+                    point2 = point;
+                }
+                onePath = this.newPopulation.get(i);
+                keep = onePath.path;
+                int mutain =  (int)(((point2-point1+1)/2));
+                for( int j = point1 ; j < point1+mutain ; j++ ){
+                    City swap = keep.get(j);
+                    keep.set(j, keep.get(point2));
+                    keep.set(point2, swap);
+                    point2 = point2 - 1 ;
+                }
+                onePath.path = keep;
+                this.newPopulation.set(i, onePath);
+            }
+            
+        }
         
         
         // this.newPopulation = SomeThing
