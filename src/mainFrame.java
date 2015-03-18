@@ -312,10 +312,10 @@ public class mainFrame extends javax.swing.JFrame {
 
     private void initDraw(ArrayList<City> cities) {
         jPanel1.setVisible(false);
-        DrawDiagram panel1 = new DrawDiagram(); // create new panel for draw diagram
+        DrawDiagram panel1 = new DrawDiagram();             // create new panel for draw diagram
         panel1.setPreferredSize(new Dimension(500, 500));   // set size of new panel
         panel1.setOpaque(false);
-        jPanel1.add(panel1, BorderLayout.CENTER);   // add new panel into jPanel1
+        jPanel1.add(panel1, BorderLayout.CENTER);           // add new panel into jPanel1
         jPanel1.setVisible(true);
         //panel1.setAnimate(); animate
     }

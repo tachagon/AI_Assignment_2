@@ -16,14 +16,14 @@ class DrawDiagram extends JPanel implements ActionListener{
     public ArrayList<City> cities = new ArrayList<City>();
     
     @Override
-    public void paintComponent(Graphics g){     // draw diagram
+    public void paintComponent(Graphics g){             // draw diagram
         for(int i=0; i<this.cities.size(); i++){
+            City c1 = this.cities.get(i);               // get first City as c1
+            g.setColor(new Color(181, 181, 181));       // set gray color
             for(int j=0; j<this.cities.size(); j++){
-                g.setColor(new Color(181, 181, 181));
                 if(i != j){
-                    City c1 = this.cities.get(i);
-                    City c2 = this.cities.get(j);
-                    g.drawLine((int)c1.x, (int)c1.y, (int)c2.x, (int)c2.y);
+                    City c2 = this.cities.get(j);       // get others City as c2
+                    g.drawLine((int)c1.x, (int)c1.y, (int)c2.x, (int)c2.y); // draw line
                 }
             }
         }
