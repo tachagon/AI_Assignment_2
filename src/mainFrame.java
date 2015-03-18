@@ -31,6 +31,8 @@ public class mainFrame extends javax.swing.JFrame {
     /**
      * Creates new form mainFrame
      */
+    public GA TSP;  // Object for Travelling Salesman Problem
+    
     public mainFrame() {
         initComponents();
     }
@@ -247,7 +249,9 @@ public class mainFrame extends javax.swing.JFrame {
                 maxGenText.setEnabled(true);    // enable text field for received number of max generation
                 runGA.setEnabled(true);         // enable Run GA button
                 ArrayList<ArrayList> datas = extract(datasTemp);
-                initDraw();     // draw initialization of diagram
+                TSP = new GA();
+                TSP.createCity(datas);
+                initDraw(TSP.cities);     // draw initialization of diagram
                 
                 buf.close();    // close buffer
             } catch (Exception ex) {
@@ -306,7 +310,7 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JButton runGA;
     // End of variables declaration//GEN-END:variables
 
-    private void initDraw() {
+    private void initDraw(ArrayList<City> cities) {
         jPanel1.setVisible(false);
         DrawDiagram panel1 = new DrawDiagram(); // create new panel for draw diagram
         panel1.setPreferredSize(new Dimension(500, 500));   // set size of new panel
