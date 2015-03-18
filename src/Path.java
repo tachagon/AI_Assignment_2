@@ -31,7 +31,7 @@ public class Path {
     }
     
     // This function is used for calculate total distance of path
-    public double calDistance(){
+    public void calDistance(){
         // Calculate distance from city to city
         double x = 0 ;
         for(int i = 0 ; i < this.path.size() ; i++){ //number city
@@ -41,9 +41,7 @@ public class Path {
                 x = x + this.path.get(i).distanceTo(this.path.get(0));}//calculate distance back to first city
             
         }
-        
-        
-        return x;
+        this.distance =x;
     }
     
     public String toString(){
@@ -79,8 +77,8 @@ public class Path {
         System.out.println(x6.distanceTo(x1));
         
         p12.path = li1;
-        //p12.calDistance();
-        System.out.println(p12.calDistance());
+        p12.calDistance();
+        System.out.println(p12.distance);
         
     }
 }
