@@ -43,6 +43,46 @@ public class GA {
     
     // This function used for crossover for new population in next generation
     public void crossover(){
+        ArrayList<Path> newGen = new ArrayList<Path>();
+        ArrayList<City> change1 = new ArrayList<City>();
+        ArrayList<City> change2 = new ArrayList<City>();
+        Path P1 = new Path();
+        Path P2 = new Path();
+        Path C1 = new Path();
+        Path C2 = new Path();
+        int popCross = 0;
+        int point1 = 0, point2 = 0;
+        while(true) {
+            P1 = newPopulation.get((int) (Math.random() * newPopulation.size()));
+            P2 = newPopulation.get((int) (Math.random() * newPopulation.size()));
+            popCross = (int) (Math.random() * 11); // 0 - 10
+            if(popCross > 11) { // not Crossover ///////////////////////////////////////////////
+                newGen.add(P1);
+                newGen.add(P2);
+            } else { // Crossover
+                while(point1 == point2) {
+                    point1 = (int) (Math.random() * P1.path.size());
+                    point2 = (int) (Math.random() * P1.path.size());
+                }
+                if(point1 > point2) { // point 1 right, point 2 left. want point 1 left, point 2 right
+                    int point = point1;
+                    point1 = point2;
+                    point2 = point;
+                }
+                for(int i = point1; i < point2+1; i++) {
+                    change1.add(P1.path.get(i));
+                    change2.add(P2.path.get(i));
+                }
+                for(int i = 0; i < P1.path.size(); i++) {
+                    
+                }
+                newGen.add(C1);
+                newGen.add(C2);
+            }
+            if(newGen.size() == newPopulation.size())
+                break;
+        }
+        newPopulation = newGen;
         //------WRITE--CODE--BELOW-------
         /*====VVVVVVVVVVVVVVVVVVVVVVV====
         *=======VVVVVVVVVVVVVVVVVV=======
@@ -102,15 +142,30 @@ public class GA {
     }
     
     public static void main(String[] args) {
-        GA test = new GA();
-        for(int i = 0; i < 5; i++)
+        /*GA test = new GA();
+        for(int i = 0; i < 8; i++)
             test.cities.add(new City(i, 12, 12));
         test.initPopulation();
         for(Path P:test.population) {
             println(P);
+        } */
+        Path path1 = new Path();
+        Path path2 = new Path();
+        ArrayList<City> newCity1 = new ArrayList<City>();
+        GA test = new GA();
+        for(int i = 0; i < 8; i++) {
+            newCity1.add(new City(i, 12, 12));
         }
-        
-        
+        path1.createChromosome(newCity1);
+        path2.createChromosome(newCity1);
+        test.newPopulation.add(path1);
+        test.newPopulation.add(path2);
+        println("P1 : " + test.newPopulation.get(0));
+        println("P2 : " + test.newPopulation.get(1));
+        test.crossover();
+        println("Crossover");
+        println("C1 : " + test.newPopulation.get(0));
+        println("C2 : " + test.newPopulation.get(1));
     }
     
 }
