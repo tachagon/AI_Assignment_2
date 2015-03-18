@@ -56,6 +56,7 @@ public class mainFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         maxGenText = new javax.swing.JTextField();
+        runGA = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Travelling Saleman Problem GA");
@@ -134,6 +135,9 @@ public class mainFrame extends javax.swing.JFrame {
         maxGenText.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         maxGenText.setEnabled(false);
 
+        runGA.setText("Run GA");
+        runGA.setEnabled(false);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -153,7 +157,9 @@ public class mainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(maxGenText, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(284, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(runGA)
+                .addContainerGap(209, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,7 +172,8 @@ public class mainFrame extends javax.swing.JFrame {
                     .addComponent(numCityText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(open)
                     .addComponent(jLabel3)
-                    .addComponent(maxGenText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(maxGenText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(runGA))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -238,6 +245,7 @@ public class mainFrame extends javax.swing.JFrame {
                 nameText.setText(datasTemp.get(0).split(": ")[1]);      // show name of problem in text field
                 numCityText.setText(datasTemp.get(3).split(": ")[1]);   // show number of city of problem in text field
                 maxGenText.setEnabled(true);    // enable text field for received number of max generation
+                runGA.setEnabled(true);         // enable Run GA button
                 ArrayList<ArrayList> datas = extract(datasTemp);
                 initDraw();     // draw initialization of diagram
                 
@@ -295,6 +303,7 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField nameText;
     private javax.swing.JTextField numCityText;
     private javax.swing.JButton open;
+    private javax.swing.JButton runGA;
     // End of variables declaration//GEN-END:variables
 
     private void initDraw() {
