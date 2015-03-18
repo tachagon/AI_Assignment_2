@@ -84,6 +84,15 @@ public class GA {
         this.population = this.newPopulation;
     }
     
+    public double calCmax(){
+        double Cmax=0;                  // create variable for output of function
+        for(Path p:this.population){    // each path in population
+            p.calDistance();            // calculate distance of each path
+            if(p.distance > Cmax) Cmax = p.distance;    // update Cmax value
+        }
+        return Cmax;    // return Cmax value
+    }
+    
     public void createCity(ArrayList<ArrayList> datas){
         for(int i=0; i<datas.size(); i++){
             double x,y;
