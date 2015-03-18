@@ -6,7 +6,7 @@ public class Path {
     public double fitness;          // used for keep fitness value of an object
     public double distance;         // used for keep total distance of path
     
-    public Path(){
+    public Path() {
         this.path = new ArrayList<City>();
         this.fitness = 0.0;
         this.distance = -1.0;
