@@ -17,6 +17,7 @@ public class GA {
         for(int i = 0; i < this.cities.size(); i++) {
             Path temp = new Path();             // create temporarily Path Object
             temp.createChromosome(this.cities); // create a Chromosome as Path
+            temp.calDistance();                 // calculate ditance of each path
             this.population.add(temp);          // add Path into a population
         }
     }

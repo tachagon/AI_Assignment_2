@@ -10,7 +10,6 @@ public class Path {
         this.path = new ArrayList<City>();
         this.fitness = 0.0;
         this.distance = -1.0;
-        this.calDistance();     // calculate Distance
     }
     
     public void createChromosome(ArrayList<City> cities) {
@@ -32,12 +31,19 @@ public class Path {
     }
     
     // This function is used for calculate total distance of path
-    private void calDistance(){
-        // Write Code below
+    public void calDistance(){
+        // Calculate distance from city to city
+        double x = 0 ;
+        for(int i = 0 ; i < this.path.size() ; i++){ //number city
+            if (i != this.path.size()-1){
+                x = x + this.path.get(i).distanceTo(this.path.get(i+1));}//calculate distance to another city
+            else{
+                x = x + this.path.get(i).distanceTo(this.path.get(0));}//calculate distance back to first city
+            
+        }
         
         
-        
-        this.distance = 0.0;
+        this.distance = x;
     }
     
     public String toString(){
@@ -46,5 +52,20 @@ public class Path {
           sj.add(c.toString());
         }
         return sj.toString();
+    }
+    
+    public static void main(String[] args){
+        City x1 = new City(1, 1.0, 0.0);
+        City x2 = new City(2, 1.0, 4.0);
+        City x3 = new City(3, 1.0, 10.0);
+        Path p1 = new Path();
+        ArrayList<City> li1 = new ArrayList<City>();
+        li1.add(x1);
+        li1.add(x2);
+        li1.add(x3);
+        
+        p1.createChromosome(li1);
+        
+        
     }
 }
