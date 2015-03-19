@@ -12,22 +12,24 @@ public class Path {
         this.distance = -1.0;
     }
     
+    // function for create chromosome from all city
     public void createChromosome(ArrayList<City> cities) {
-        ArrayList<City> chromosome = new ArrayList<City>();
+        ArrayList<City> chromosome = new ArrayList<City>(); // store new path for travel all city or call new chromosome
         while (true) {
-            int numCity = (int) (Math.random() * cities.size());
-            City newCity = cities.get(numCity);
-            if (chromosome.indexOf(newCity) == -1)
-                chromosome.add(newCity);
-            if(chromosome.size() == cities.size())
-                break;
+            int numCity = (int) (Math.random() * cities.size());    // random name city for add in new path
+            City newCity = cities.get(numCity); // store new city from random city
+            if (chromosome.indexOf(newCity) == -1)  // check new city have in new path
+                chromosome.add(newCity);    // if not have new city then add new city to new path
+            if(chromosome.size() == cities.size())  // check number of new city in new path equal number of all city
+                break;  // if number of new city in new path equal number of all city then end 
         }
-        this.path = chromosome;
+        this.path = chromosome; // store new path
     }
     
     // This Function is used for calculate Finess value of a Path object
     public void calFitness(double Cmax){
-        this.fitness = Cmax - this.distance;
+        // calculate Finess from path have longest distance in current generation - distance of current path
+        this.fitness = Cmax - this.distance;    
     }
     
     // This function is used for calculate total distance of path
