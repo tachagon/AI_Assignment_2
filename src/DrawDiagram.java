@@ -12,35 +12,53 @@ import javax.swing.Timer;
 
 class DrawDiagram extends JPanel implements ActionListener{
     Timer tm = new Timer(0, this);
-    int x=0, velX = 2;
-    public ArrayList<City> cities = new ArrayList<City>();
+    public int goodPathPop = 0;
+    public Path bestPath = new Path();
+    public ArrayList<City> cities = new ArrayList<City>();      // for keep all City Objects
+    public ArrayList<Path> population = new ArrayList<Path>();  // for keep population of current generation
     
     @Override
-    public void paintComponent(Graphics g){             // draw diagram
-        for(int i=0; i<this.cities.size(); i++){
-            City c1 = this.cities.get(i);               // get first City as c1
-            g.setColor(new Color(181, 181, 181));       // set gray color
-            for(int j=0; j<this.cities.size(); j++){
-                if(i != j){
-                    City c2 = this.cities.get(j);       // get others City as c2
-                    g.drawLine((int)c1.x, (int)c1.y, (int)c2.x, (int)c2.y); // draw line
-                }
-            }
-        }
-        
+    public void paintComponent(Graphics g){         // draw diagram
+        this.drawCity(g);
     }
     
-    public void setAnimate(){   // is used for start animate
+    private void drawPath(Graphics g){
+        for(int i=0; i<this.population.size(); i++){
+            Path p=this.population.get(i);
+            if(this.goodPathPop != i){
+                
+            }
+        }
+    }
+    
+    private void drawCity(Graphics g){
+        double Xmax=0, Ymax=0;
+        int r = 10;
+        for(City c:this.cities){
+            if(c.x > Xmax) Xmax = c.x;  // find maximum x value
+            if(c.y > Ymax) Ymax = c.y;  // find maximum y value
+        }
+        for(City c:this.cities){
+            g.setColor(new Color(82, 139, 139));    // set color for outter circle
+            int x=0, y=0;
+            x = (int)(c.x*490/Xmax);    // calculate x position for draw circle
+            y = (int)(c.y*490/Ymax);    // calculate y position fot draw circle
+            g.fillOval(x, y, r, r);     // draw outter circle
+            g.setColor(new Color(121, 205, 205));   // set new color fot inner circle
+            g.fillOval(x, y, r-2, r-2); // draw inner circle
+        }
+    }
+    
+    public void startAnimate(){ // is used for start animate
         tm.start();
     }
     
+    public void stopAnimate(){  // is used fot stop animate
+        tm.stop();
+    }
+    
     public void actionPerformed(ActionEvent e){ // update something for animate
-        if(x<0 || x>500){
-            velX = -velX;
-        }
-        x+=velX;
         repaint();
-        System.out.println("test");
     }
     
     public static void main(String[] args){
