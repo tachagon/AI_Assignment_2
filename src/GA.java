@@ -222,7 +222,35 @@ public class GA {
     }
     
     public void findBestPath(){
-        
+        double keep = 0.0;                                  // create object for keep path for check 
+        for(int i = 0 ; i < this.population.size() ; i++){  // check every path in population
+            this.population.get(i).calDistance();           // calculate distance
+            println("Distance "+i+" "+this.population.get(i).distance);
+            if(keep == 0.0){                                // check keep is empty or not
+                keep = this.population.get(i).distance ;    // get path into keep
+                this.goodPath = this.population.get(i);     // get pop to goodpath
+            }
+            else{
+                println("keep dis "+i+" "+keep);            
+                if(this.population.get(i).distance < keep){ // check path for check is more than new path 
+                    keep = this.population.get(i).distance ;// get path into keep
+                    this.goodPath = this.population.get(i); // get pop to goodpath
+                }
+            }
+        }
+        this.goodPath.calDistance();                        // calculate distance of goodpath
+        this.bestPath.calDistance();                        // calculate distance of bestpath
+        if(this.bestPath.distance <= 0){                    // checkbestpath is empty
+            this.bestPath = this.goodPath;                  // get good path into bestpath
+        }
+        if(this.bestPath.distance > this.goodPath.distance){// check bestpath more than goodpath or not
+            this.bestPath = this.goodPath;                  // get good path into bestpath
+        }
+        // for Test check goodpath bestpath ... 
+        this.goodPath.calDistance();                                
+        this.bestPath.calDistance();                                
+        println("BestPaht is "+this.bestPath.distance);             
+        println("GoodPath is "+this.goodPath.distance);            
     }
     
     private double calCmax(){
@@ -282,12 +310,16 @@ public class GA {
         //// BOOK \\\
         GA test2 = new GA();
         for(int i = 0; i < 8; i++)
-            test2.cities.add(new City(i, 12, 12));
+            test2.cities.add(new City(i, i, i*2));
         test2.initPopulation();
         println("Test2.1 : "+test2.population.get(0));
         println("Test2.2 : "+test2.population.get(1));
+        println("Test2.3 : "+test2.population.get(2));
+        println("Test2.4 : "+test2.population.get(3));
         test2.newPopulation.add(test2.population.get(0));
         test2.newPopulation.add(test2.population.get(1));
+        test2.newPopulation.add(test2.population.get(2));
+        test2.newPopulation.add(test2.population.get(3));
         test2.mutation();
         for(Path p:test2.newPopulation){
             println (p) ;
