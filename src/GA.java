@@ -14,6 +14,7 @@ public class GA {
         this.population = new ArrayList<Path>();
         this.newPopulation = new ArrayList<Path>();
         this.bestPath = new Path();
+        this.goodPath = new Path();
     }
     
     // This function used for create initial population
