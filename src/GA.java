@@ -103,9 +103,8 @@ public class GA {
             start=(start+(P))%F;
         }
         this.newPopulation = keep;
-        // this.newPopulation = SomeThing
     }
-
+    
     // This function used for crossover for new population in next generation
     public void crossover(){
         ArrayList<Path> newGen = new ArrayList<Path>();
@@ -217,7 +216,7 @@ public class GA {
         this.population = this.newPopulation;
     }
     
-    public double calCmax(){
+    private double calCmax(){
         double Cmax=0;                  // create variable for output of function
         for(Path p:this.population){    // each path in population
             p.calDistance();            // calculate distance of each path
@@ -287,6 +286,7 @@ public class GA {
     }
     
 }
+
 
 
 
