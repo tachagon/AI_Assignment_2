@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -44,8 +45,6 @@ public class GA {
         double F=0;
         // cal sum of fitness
         int N = this.population.size();
-        double P = F/N;
-        double start = new Random().nextInt((int)F);
         ArrayList<Path> keep = new ArrayList<>();
         ArrayList<Double> allFitness = new ArrayList<>();
         double cmax = this.calCmax();  // generate Cmax for calulate fitness.
@@ -54,8 +53,9 @@ public class GA {
             p.calFitness(cmax);    // calulate fitness.
             F += p.fitness; 
             allFitness.add(p.fitness);
-        }
-        
+        } 
+        double start = new Random().nextInt((int)F);
+        double P = F/N;
         // make wheel
         /*/
               ---value description---
@@ -91,17 +91,32 @@ public class GA {
         step2 : Search population in quarant in step1 and select population.
         stop3 : keep new population to this.newpopulation.
         /*/
-        for(int i=0; i<allFitness.size(); i++){
-            int quadrant = (int)(start/(F/4));
+        int quadrant = -1;
+        for(int i=0; i<allFitness.size(); i++){  
+            if (quadrant == -1) {
+                quadrant = (int)(start/(F/4)); 
+            }
             int start_search, end_search;   
             switch (quadrant){ 
                 case 0:{ 
                     start_search = 0;
                     end_search = population.size()/4;
-                    for(int j=start_search; j<=end_search; j++){ 
-                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
+                    for(int j=start_search; j<=end_search; j++){
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) ){
                             keep.add(this.population.get( wheel.get(j).get(2).intValue()));
-
+                            start=(start+(P))%F;
+                            quadrant = -1;
+                            break;
+                        }
+                        else if (j==end_search){
+                            i -= 1;
+                            if ( start < wheel.get(j).get(1) ){
+                                quadrant = 3;
+                            }
+                            else{
+                                quadrant = 1;
+                            }
+                        }
                     }
                     break;
                 }
@@ -109,8 +124,21 @@ public class GA {
                     start_search = population.size()/4;
                     end_search = population.size()*2/4;
                     for(int j=start_search; j<=end_search; j++){ 
-                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) ){
                             keep.add(this.population.get( wheel.get(j).get(2).intValue()));
+                            start=(start+(P))%F;
+                            quadrant = -1;
+                            break;
+                        }
+                        else if (j==end_search){
+                            i -= 1;
+                            if ( start < wheel.get(j).get(1) ){
+                                quadrant = 0;
+                            }
+                            else{
+                                quadrant = 2;
+                            }
+                        }
                     }
                     break;
                 }
@@ -118,8 +146,21 @@ public class GA {
                     start_search = population.size()*2/4;
                     end_search = population.size()*3/4;
                     for(int j=start_search; j<=end_search; j++){ 
-                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
-                            keep.add(this.population.get( wheel.get(j).get(2).intValue()));
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) ){
+                            keep.add(this.population.get( wheel.get(j).get(2).intValue())); 
+                            start=(start+(P))%F;
+                            quadrant = -1;
+                            break;
+                        }
+                        else if (j==end_search){
+                            i -= 1;
+                            if ( start < wheel.get(j).get(1) ){
+                                quadrant = 1;
+                            }
+                            else{
+                                quadrant = 3;
+                            }
+                        }                        
                     }
                     break;
                 }
@@ -127,15 +168,29 @@ public class GA {
                     start_search = population.size()*3/4;
                     end_search = population.size()-1;
                     for(int j=start_search; j<=end_search; j++){ 
-                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
-                            keep.add(this.population.get( wheel.get(j).get(2).intValue()));
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) ){
+                            keep.add(this.population.get( wheel.get(j).get(2).intValue())); 
+                            start=(start+(P))%F;
+                            quadrant = -1;
+                            break;
+                        }
+                        else if (j==end_search){
+                            i -= 1;
+                            if ( start < wheel.get(j).get(1) ){
+                                quadrant = 2;
+                            }
+                            else{
+                                quadrant = 1;
+                            }
+                        }                        
                     }
-                    break;
+                   break;
                 }
             }
-            start=(start+(P))%F;
+            //start=(start+(P))%F;
         }
         this.newPopulation = keep;
+        println("Fitness size : "+ allFitness.size());
     }
     
     // This function for crossover form PMX  for new population in next generation
@@ -383,6 +438,23 @@ public class GA {
         for(Path p:test2.newPopulation){
             println (p) ;
         }
+        /// Boss \\\
+        GA test3 = new GA();
+        int position[][] = {{1,2}, {30,5}, {24,46}, {34, 56}, {84,24}, {53, 24}, {36, 43}, { 23, 41}, {63,13}, {63,13} ,{32, 43}, {39,90}};
+        for(int i = 0; i < position.length; i++)
+            test3.cities.add(new City(i, position[i][0], position[i][1]));
+        test3.initPopulation();
+        println("++++++ Test3 : Boss selection ++++++" );
+        test3.select();
+        println("==Old population==");
+        for(Path p:test3.population){
+            println(p);
+        }
+        println("==New population==");
+        for(Path v:test3.newPopulation){
+            println(v);
+        }
+        println("Number of new population: "+test3.newPopulation.size());
     }
     
 }
