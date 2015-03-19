@@ -68,7 +68,7 @@ public class GA {
                     for(int j=start_search; j<=end_search; j++){ System.out.println("0");
                         if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
                             keep.add(this.population.get( wheel.get(j).get(2).intValue()));
-                            
+
                     }
                     break;
                 }
