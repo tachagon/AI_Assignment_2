@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GA {
     public ArrayList<City> cities;          // for keep all City Objects
@@ -32,14 +33,79 @@ public class GA {
         */
         // used this.population AND use fitness
         
+        double F=0;
+        // cal sum of fitness
+        int N = this.population.size();
+        double P = F/N;
+        double start = new Random().nextInt((int)F);
+        ArrayList<Path> keep = new ArrayList<>();
+        ArrayList<Double> allFitness = new ArrayList<>();
+        // add all fitness to allFitness value.
+        for(Path p:this.population){
+            p.calFitness(start);
+        }
         
+        // make wheel
+        ArrayList<ArrayList<Double>> wheel = new ArrayList<>();
+        ArrayList<Double> dataWheel = new ArrayList<>();
+        double brink=0;
+        for(int i=0; i<allFitness.size(); i++){
+            dataWheel.add(brink);
+            dataWheel.add(allFitness.get(i) + brink);
+            dataWheel.add((double)i);
+            wheel.add(dataWheel); // add data to wheel
+            brink = allFitness.get(i)+brink+ 0.01;
+            dataWheel = new ArrayList<>(); // clear data in dataWheel
+        }
         
-        
-        
-        
+        for(int i=0; i<allFitness.size(); i++){
+            int quadrant = (int)(start/(F/4));
+            int start_search, end_search; System.out.println(quadrant);     double in;
+            switch (quadrant){ 
+                case 0:{ 
+                    start_search = 0;
+                    end_search = population.size()/4;
+                    for(int j=start_search; j<=end_search; j++){ System.out.println("0");
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
+                            keep.add(this.population.get( wheel.get(j).get(2).intValue()));
+                            
+                    }
+                    break;
+                }
+                case 1:{ 
+                    start_search = population.size()/4;
+                    end_search = population.size()*2/4;
+                    for(int j=start_search; j<=end_search; j++){ System.out.println("1");
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
+                            keep.add(this.population.get( wheel.get(j).get(2).intValue()));
+                    }
+                    break;
+                }
+                case 2:{ 
+                    start_search = population.size()*2/4;
+                    end_search = population.size()*3/4;
+                    for(int j=start_search; j<=end_search; j++){ System.out.println("2");
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
+                            keep.add(this.population.get( wheel.get(j).get(2).intValue()));
+                    }
+                    break;
+                }
+                case 3:{  
+                    start_search = population.size()*3/4;
+                    end_search = population.size()-1;
+                    for(int j=start_search; j<=end_search; j++){ System.out.println("3");
+                        if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
+                            keep.add(this.population.get( wheel.get(j).get(2).intValue()));
+                    }
+                    break;
+                }
+            }
+            start=(start+(P))%F;
+        }
+        this.newPopulation = keep;
         // this.newPopulation = SomeThing
     }
-    
+
     // This function used for crossover for new population in next generation
     public void crossover(){
         ArrayList<Path> newGen = new ArrayList<Path>();
