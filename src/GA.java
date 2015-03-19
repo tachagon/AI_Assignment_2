@@ -31,11 +31,15 @@ public class GA {
     // This function used for selection new population in next generation
     public void select(){
         //------WRITE--CODE--BELOW-------
-        /*====VVVVVVVVVVVVVVVVVVVVVVV====
-        *==========VVVVVVVVVVVV==========
-        *=============VVVVVV=============
-        *===============VV===============
-        */
+        /*/
+           ---value description---
+        F       is sum of fitness each object in population.
+        N       is number of population.
+        P       is F/N that distance between point.
+        keep    is new population from selection.
+        start   is start point in roulette wheel.
+        allFitness is used to save all fitness for each population.
+        /*/
         // used this.population AND use fitness
         
         double F=0;
@@ -45,12 +49,30 @@ public class GA {
         double start = new Random().nextInt((int)F);
         ArrayList<Path> keep = new ArrayList<>();
         ArrayList<Double> allFitness = new ArrayList<>();
+        double cmax = this.calCmax();  // generate Cmax for calulate fitness.
         // add all fitness to allFitness value.
-        for(Path p:this.population){
-            p.calFitness(start);
+        for(Path p:this.population){  // access each path from population.
+            p.calFitness(cmax);    // calulate fitness.
+            F += p.fitness; 
+            allFitness.add(p.fitness);
         }
         
         // make wheel
+        /*/
+              ---value description---
+            wheel    is roulette wheel that has each channal's width from fitness.
+            brink    is used to be base of wheel each fitness.
+            dataWheel consist { start, end, index }
+                    start - end = channal's width from fitness.
+                    index is population's index.
+                Sumation of all fitness from allFitness is total area of roulette wheel.
+        Each population has own fitness. The first population has range in wheel between
+        0 to its fitness. The secound population has range in wheel between 
+        0+population's fitenss from previous population to secound population's fitness
+        + population's fitenss from previous population. Assume that each chanal in wheel
+        equal between population's fitenss from previous+base and base +
+        current population's fitenss then roulette wheel will complete.
+        /*/
         ArrayList<ArrayList<Double>> wheel = new ArrayList<>();
         ArrayList<Double> dataWheel = new ArrayList<>();
         double brink=0;
@@ -63,14 +85,21 @@ public class GA {
             dataWheel = new ArrayList<>(); // clear data in dataWheel
         }
         
+        /*/
+            Deviding to be quarant for reduce chanal to search new population.
+        step1 : We get start point from random then we calulate that whice quadrant
+                does start point is in.
+        step2 : Search population in quarant in step1 and select population.
+        stop3 : keep new population to this.newpopulation.
+        /*/
         for(int i=0; i<allFitness.size(); i++){
             int quadrant = (int)(start/(F/4));
-            int start_search, end_search; System.out.println(quadrant);     double in;
+            int start_search, end_search;   
             switch (quadrant){ 
                 case 0:{ 
                     start_search = 0;
                     end_search = population.size()/4;
-                    for(int j=start_search; j<=end_search; j++){ System.out.println("0");
+                    for(int j=start_search; j<=end_search; j++){ 
                         if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
                             keep.add(this.population.get( wheel.get(j).get(2).intValue()));
 
@@ -80,7 +109,7 @@ public class GA {
                 case 1:{ 
                     start_search = population.size()/4;
                     end_search = population.size()*2/4;
-                    for(int j=start_search; j<=end_search; j++){ System.out.println("1");
+                    for(int j=start_search; j<=end_search; j++){ 
                         if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
                             keep.add(this.population.get( wheel.get(j).get(2).intValue()));
                     }
@@ -89,7 +118,7 @@ public class GA {
                 case 2:{ 
                     start_search = population.size()*2/4;
                     end_search = population.size()*3/4;
-                    for(int j=start_search; j<=end_search; j++){ System.out.println("2");
+                    for(int j=start_search; j<=end_search; j++){ 
                         if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
                             keep.add(this.population.get( wheel.get(j).get(2).intValue()));
                     }
@@ -98,7 +127,7 @@ public class GA {
                 case 3:{  
                     start_search = population.size()*3/4;
                     end_search = population.size()-1;
-                    for(int j=start_search; j<=end_search; j++){ System.out.println("3");
+                    for(int j=start_search; j<=end_search; j++){ 
                         if ( (start < wheel.get(j).get(1)) && (start > wheel.get(j).get(0)) )
                             keep.add(this.population.get( wheel.get(j).get(2).intValue()));
                     }
