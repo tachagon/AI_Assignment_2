@@ -84,7 +84,7 @@ public class GA {
         this.population = this.newPopulation;
     }
     
-    public double calCmax(){
+    private double calCmax(){
         double Cmax=0;                  // create variable for output of function
         for(Path p:this.population){    // each path in population
             p.calDistance();            // calculate distance of each path
