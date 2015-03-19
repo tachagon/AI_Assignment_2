@@ -24,9 +24,12 @@ class DrawDiagram extends JPanel implements ActionListener{
     
     private void drawPath(Graphics g){
         for(int i=0; i<this.population.size(); i++){
-            Path p=this.population.get(i);
-            if(this.goodPathPop != i){
-                
+            Path p = this.population.get(i);    // get each Path from population
+            if(this.goodPathPop != i){          // if path is not good
+                g.setColor(new Color(181, 181, 181));   // set color for draw line
+                for(int j=0; j<p.path.size(); j++){     // each City in path
+                    
+                }
             }
         }
     }
