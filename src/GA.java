@@ -6,11 +6,14 @@ public class GA {
     public ArrayList<City> cities;          // for keep all City Objects
     public ArrayList<Path> population;      // for keep population of current generation
     public ArrayList<Path> newPopulation;   // for keep new population in next generation
+    public Path bestPath;                   // fot keep the best Path
+    public Path goodPath;                   // for keep good path in current generation
     
     public GA(){
         this.cities = new ArrayList<City>();
         this.population = new ArrayList<Path>();
         this.newPopulation = new ArrayList<Path>();
+        this.bestPath = new Path();
     }
     
     // This function used for create initial population
@@ -21,6 +24,7 @@ public class GA {
             temp.calDistance();                 // calculate ditance of each path
             this.population.add(temp);          // add Path into a population
         }
+        this.findBestPath();                    // find the best Path
     }
     
     // This function used for selection new population in next generation
@@ -214,6 +218,10 @@ public class GA {
     public void updatePop(){
         this.population.clear();
         this.population = this.newPopulation;
+    }
+    
+    public void findBestPath(){
+        
     }
     
     private double calCmax(){
