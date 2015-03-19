@@ -142,23 +142,33 @@ public class GA {
     // This function used for crossover for new population in next generation
     public void crossover(){
         ArrayList<Path> newGen = new ArrayList<Path>();
-        ArrayList<City> change1 = new ArrayList<City>();
-        ArrayList<City> change2 = new ArrayList<City>();
-        Path P1 = new Path();
-        Path P2 = new Path();
-        Path C1 = new Path();
-        Path C2 = new Path();
+        City initCity =  new City(-100, -100, -100);
         int popCross = 0;
-        int point1 = 0, point2 = 0;
-        while(true) {
+        int point1, point2, index;
+        int time = 0; // for print
+        int maxTime = newPopulation.size() / 2;
+        while(time < maxTime) {
+            Path P1 = new Path(); // Parent Path
+            Path P2 = new Path(); // Parent Path
+            Path C1 = new Path(); // Child Path
+            Path C2 = new Path(); // Child Path
+            point1 = 0; 
+            point2 = 0; 
+            index = 0;
+            println("Crossover " + ++time);
             P1 = newPopulation.get((int) (Math.random() * newPopulation.size()));
             P2 = newPopulation.get((int) (Math.random() * newPopulation.size()));
-            popCross = (int) (Math.random() * 11); // 0 - 10
-            if(popCross > 11) { // not Crossover ///////////////////////////////////////////////
+            println("P1 : " + P1.toString());
+            println("P2 : " + P2.toString());
+            popCross = (int) (Math.random() * 100); // 0 - 99
+            println("Pop = " + popCross);
+            if(popCross > 79) { // not Crossover ///////////////////////////////////////////////
                 newGen.add(P1);
                 newGen.add(P2);
+                println("C1 : " + P1);
+                println("C2 : " + P2);
             } else { // Crossover
-                while(point1 == point2) {
+                while(point1 == point2) { // random point for Crossover
                     point1 = (int) (Math.random() * P1.path.size());
                     point2 = (int) (Math.random() * P1.path.size());
                 }
@@ -167,32 +177,48 @@ public class GA {
                     point1 = point2;
                     point2 = point;
                 }
-                for(int i = point1; i < point2+1; i++) {
-                    change1.add(P1.path.get(i));
-                    change2.add(P2.path.get(i));
-                }
+                println("Point1 = " + point1);
+                println("Point2 = " + point2);
                 for(int i = 0; i < P1.path.size(); i++) {
-                    
+                    C1.path.add(initCity);
+                    C2.path.add(initCity);
+                }
+                for(int i = point1; i <= point2; i++) {
+                    C1.path.remove(i);
+                    C1.path.add(i, P2.path.get(i));
+                    C2.path.remove(i);
+                    C2.path.add(i, P1.path.get(i));
+                }
+                while(C1.path.indexOf(initCity) != -1) { // true when have init city
+                    index = C1.path.indexOf(initCity);
+                    for(int i = 0; i < cities.size(); i++) {
+                        if(C1.path.indexOf(cities.get(i)) == -1) { // No have city
+                            C1.path.remove(index);
+                            C1.path.add(index, cities.get(i));
+                        }
+                    }
+                }
+                while(C2.path.indexOf(initCity) != -1) { // true when have init city
+                    index = C2.path.indexOf(initCity);
+                    for(int i = 0; i < cities.size(); i++) {
+                        if(C2.path.indexOf(cities.get(i)) == -1) { // No have city
+                            C2.path.remove(index);
+                            C2.path.add(index, cities.get(i));
+                        }
+                    }
                 }
                 newGen.add(C1);
                 newGen.add(C2);
+                println("C1 : " + C1);
+                println("C2 : " + C2);
             }
-            if(newGen.size() == newPopulation.size())
-                break;
         }
         newPopulation = newGen;
-        //------WRITE--CODE--BELOW-------
-        /*====VVVVVVVVVVVVVVVVVVVVVVV====
-        *==========VVVVVVVVVVVV==========
-        *=============VVVVVV=============
-        *===============VV===============
-        */
+        
         // 1. use this.newPopulation for crossover
         // 2. random Probability value for crossover
         // 3. random 2 position for PMX crossover
         // Note: Not Forget create new Path Object in this.newPopulation
-        
-        
         // this.newPopulation = SomeThing
     }
     
@@ -290,23 +316,29 @@ public class GA {
         } */
         
         /// KUNG \\\
-        Path path1 = new Path();
-        Path path2 = new Path();
-        ArrayList<City> newCity1 = new ArrayList<City>();
+        Path travel;
         GA test = new GA();
-        for(int i = 0; i < 8; i++) {
-            newCity1.add(new City(i, 12, 12));
+        int numCity = 8, numPath = 20; 
+        for(int i = 0; i < numCity; i++) {
+            City newCity = new City(i, 12, 12);
+            test.cities.add(newCity);
         }
-        path1.createChromosome(newCity1);
-        path2.createChromosome(newCity1);
-        test.newPopulation.add(path1);
-        test.newPopulation.add(path2);
-        println("P1 : " + test.newPopulation.get(0));
-        println("P2 : " + test.newPopulation.get(1));
-        test.crossover();
+        for(int i = 0; i < numPath; i++) {
+            travel = new Path();
+            travel.createChromosome(test.cities);
+            test.newPopulation.add(travel);
+        }
+        
+        println("New Population");
+        for(int i = 0; i < test.newPopulation.size(); i++) {
+            println("Population " + i + " : " + test.newPopulation.get(i).toString());
+        }
         println("Crossover");
-        println("C1 : " + test.newPopulation.get(0));
-        println("C2 : " + test.newPopulation.get(1));
+        test.crossover();
+        println("New Population Next Generation");
+        for(int i = 0; i < test.newPopulation.size(); i++) {
+            println("Population " + i + " : " + test.newPopulation.get(i).toString());
+        }
         
         //// BOOK \\\
         GA test2 = new GA();
