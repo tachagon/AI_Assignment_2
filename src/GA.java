@@ -1,7 +1,7 @@
 
 import java.util.ArrayList;
 import java.util.Random;
-
+import java.util.Collections;
 public class GA {
     public ArrayList<City> cities;          // for keep all City Objects
     public ArrayList<Path> population;      // for keep population of current generation
@@ -43,8 +43,11 @@ public class GA {
         // used this.population AND use fitness
         
         double F=0;
-        // cal sum of fitness
         int N = this.population.size();
+        if(N == 0 || N == 1 || N ==2 || N==3){
+            println("should have more than 3 citys.");
+            return;}
+        // cal sum of fitness
         ArrayList<Path> keep = new ArrayList<>();
         ArrayList<Double> allFitness = new ArrayList<>();
         double cmax = this.calCmax();  // generate Cmax for calulate fitness.
@@ -54,6 +57,7 @@ public class GA {
             F += p.fitness; 
             allFitness.add(p.fitness);
         } 
+
         double start = new Random().nextInt((int)F);
         double P = F/N;
         // make wheel
@@ -92,7 +96,7 @@ public class GA {
         stop3 : keep new population to this.newpopulation.
         /*/
         int quadrant = -1;
-        for(int i=0; i<allFitness.size(); i++){  
+        for(int i=0; i<allFitness.size(); i++){
             if (quadrant == -1) {
                 quadrant = (int)(start/(F/4)); 
             }
@@ -189,6 +193,14 @@ public class GA {
             }
             //start=(start+(P))%F;
         }
+        if (keep.size()%2 != 0){
+            for(int i=0; i<allFitness.size(); i++){
+                if(allFitness.get(i) == Collections.min(allFitness)){
+                    keep.remove(i);
+                }
+            }
+        }
+
         this.newPopulation = keep;
         println("Fitness size : "+ allFitness.size());
     }
@@ -440,7 +452,7 @@ public class GA {
         }
         /// Boss \\\
         GA test3 = new GA();
-        int position[][] = {{1,2}, {30,5}, {24,46}, {34, 56}, {84,24}, {53, 24}, {36, 43}, { 23, 41}, {63,13}, {63,13} ,{32, 43}, {39,90}};
+        int position[][] = {{1,2}, {30,5}, {24,46}, {34, 56}, {73, 43}, {34, 12}, {64, 27}, {90, 45}, {43, 62}};
         for(int i = 0; i < position.length; i++)
             test3.cities.add(new City(i, position[i][0], position[i][1]));
         test3.initPopulation();
@@ -450,6 +462,7 @@ public class GA {
         for(Path p:test3.population){
             println(p);
         }
+        println("Number of new population: "+test3.population.size());
         println("==New population==");
         for(Path v:test3.newPopulation){
             println(v);
