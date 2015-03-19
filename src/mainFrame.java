@@ -15,6 +15,10 @@ import java.util.stream.Stream;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -32,6 +36,7 @@ public class mainFrame extends javax.swing.JFrame {
      * Creates new form mainFrame
      */
     public GA TSP;  // Object for Travelling Salesman Problem
+    public DrawDiagram cityPanel;  // create new panel for draw diagram
     
     public mainFrame() {
         initComponents();
@@ -66,10 +71,11 @@ public class mainFrame extends javax.swing.JFrame {
         setBounds(new java.awt.Rectangle(0, 0, 1070, 620));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
-        setPreferredSize(new java.awt.Dimension(1065, 640));
+        setMinimumSize(new java.awt.Dimension(1118, 690));
+        setPreferredSize(new java.awt.Dimension(1118, 690));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel5.setBackground(new java.awt.Color(177, 220, 248));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -79,32 +85,32 @@ public class mainFrame extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jPanel2.setPreferredSize(new java.awt.Dimension(500, 240));
+        jPanel2.setPreferredSize(new java.awt.Dimension(500, 250));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 250, Short.MAX_VALUE)
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jPanel3.setPreferredSize(new java.awt.Dimension(500, 240));
+        jPanel3.setPreferredSize(new java.awt.Dimension(500, 250));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 250, Short.MAX_VALUE)
         );
 
         jPanel4.setBackground(new java.awt.Color(177, 220, 248));
@@ -139,6 +145,11 @@ public class mainFrame extends javax.swing.JFrame {
 
         runGA.setText("Run GA");
         runGA.setEnabled(false);
+        runGA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runGAActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -161,7 +172,7 @@ public class mainFrame extends javax.swing.JFrame {
                 .addComponent(maxGenText, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(runGA)
-                .addContainerGap(209, Short.MAX_VALUE))
+                .addContainerGap(250, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,32 +195,34 @@ public class mainFrame extends javax.swing.JFrame {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(49, 49, 49)
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(20, 20, 20)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(17, 17, 17))
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(35, 35, 35)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
         jPanel1.getAccessibleContext().setAccessibleName("");
 
-        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1100, 650));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -248,9 +261,11 @@ public class mainFrame extends javax.swing.JFrame {
                 numCityText.setText(datasTemp.get(3).split(": ")[1]);   // show number of city of problem in text field
                 maxGenText.setEnabled(true);    // enable text field for received number of max generation
                 runGA.setEnabled(true);         // enable Run GA button
+                cityPanel = new DrawDiagram();  // create new panel for draw City
                 ArrayList<ArrayList> datas = extract(datasTemp);
                 TSP = new GA();
                 TSP.createCity(datas);
+                TSP.initPopulation();
                 initDraw(TSP.cities);     // draw initialization of diagram
                 
                 buf.close();    // close buffer
@@ -259,6 +274,21 @@ public class mainFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_openActionPerformed
+
+    private void runGAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runGAActionPerformed
+        // TODO add your handling code here:
+        if(this.maxGenText.getText().isEmpty()){    // if maxGenText Text Field is Empty
+            JOptionPane.showMessageDialog(this, "Please fill Maximum Generation!!!");
+        }
+        else{   // if maxGenText Text Field is not Empty
+            String maxGenStr = this.maxGenText.getText();
+            try{
+                int maxGen = Integer.parseInt(maxGenStr);
+            }catch(Exception e){    // not fill integer in maxGenText Text Field
+                JOptionPane.showMessageDialog(this, "Please fill Maximum Generation is number!!!");
+            }
+        }
+    }//GEN-LAST:event_runGAActionPerformed
 
     /**
      * @param args the command line arguments
@@ -312,13 +342,15 @@ public class mainFrame extends javax.swing.JFrame {
 
     private void initDraw(ArrayList<City> cities) {
         jPanel1.setVisible(false);
-        DrawDiagram panel1 = new DrawDiagram();             // create new panel for draw diagram
-        panel1.cities = TSP.cities;
-        panel1.setPreferredSize(new Dimension(500, 500));   // set size of new panel
-        panel1.setOpaque(false);
-        jPanel1.add(panel1, BorderLayout.CENTER);           // add new panel into jPanel1
+        cityPanel.cities = TSP.cities;
+        cityPanel.population = TSP.population;
+        cityPanel.bestPath = TSP.population.get(1);
+        cityPanel.goodPath = TSP.population.get(0);
+        cityPanel.setPreferredSize(new Dimension(500, 500));   // set size of new panel
+        cityPanel.setOpaque(false);
+        jPanel1.add(cityPanel, BorderLayout.CENTER);           // add new panel into jPanel1
         jPanel1.setVisible(true);
-        //panel1.setAnimate(); animate
+        //cityPanel.setAnimate(); animate
     }
     
     // This function is used for extracttion data from input file
