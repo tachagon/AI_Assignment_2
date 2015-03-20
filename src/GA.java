@@ -16,7 +16,7 @@ public class GA {
         this.newPopulation = new ArrayList<Path>();
         this.bestPath = new Path();
         this.goodPath = new Path();
-    }
+        this.avgDistance =  0.0 ;    }
     
     // This function used for create initial population
     public void initPopulation() {
@@ -331,9 +331,12 @@ public class GA {
     }
     
     public void findBestPath(){
+        this.avgDistance = 0.0 ;
         double keep = 0.0;                                  // create object for keep path for check 
         for(int i = 0 ; i < this.population.size() ; i++){  // check every path in population
             this.population.get(i).calDistance();           // calculate distance
+            //sum distance from every path
+            this.avgDistance = this.avgDistance + this.population.get(i).distance ; 
             if(keep == 0.0){                                // check keep is empty or not
                 keep = this.population.get(i).distance ;    // get path into keep
                 this.goodPath = this.population.get(i);     // get pop to goodpath
@@ -345,6 +348,8 @@ public class GA {
                 }
             }
         }
+        // divide avgDistance for find average
+        this.avgDistance = this.avgDistance/this.population.size();
         this.goodPath.calDistance();                        // calculate distance of goodpath
         this.bestPath.calDistance();                        // calculate distance of bestpath
         if(this.bestPath.distance <= 0){                    // checkbestpath is empty
