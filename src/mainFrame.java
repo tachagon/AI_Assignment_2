@@ -16,9 +16,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -37,6 +39,7 @@ public class mainFrame extends javax.swing.JFrame {
      */
     public GA TSP;  // Object for Travelling Salesman Problem
     public DrawDiagram cityPanel;  // create new panel for draw diagram
+    public int maxGen=0, currentGen=0;
     
     public mainFrame() {
         initComponents();
@@ -64,6 +67,8 @@ public class mainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         maxGenText = new javax.swing.JTextField();
         runGA = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Travelling Saleman Problem GA");
@@ -145,6 +150,11 @@ public class mainFrame extends javax.swing.JFrame {
 
         runGA.setText("Run GA");
         runGA.setEnabled(false);
+        runGA.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                runGAStateChanged(evt);
+            }
+        });
         runGA.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runGAActionPerformed(evt);
@@ -190,27 +200,41 @@ public class mainFrame extends javax.swing.JFrame {
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel4.setText("Generation No.");
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(17, 17, 17))
                     .addGroup(jPanel5Layout.createSequentialGroup()
@@ -262,11 +286,13 @@ public class mainFrame extends javax.swing.JFrame {
                 maxGenText.setEnabled(true);    // enable text field for received number of max generation
                 runGA.setEnabled(true);         // enable Run GA button
                 cityPanel = new DrawDiagram();  // create new panel for draw City
+                cityPanel.setPreferredSize(new Dimension(500, 500));   // set size of new panel
+                cityPanel.setOpaque(false);
                 ArrayList<ArrayList> datas = extract(datasTemp);
                 TSP = new GA();
                 TSP.createCity(datas);
                 TSP.initPopulation();
-                initDraw(TSP.cities);     // draw initialization of diagram
+                initCityDraw(TSP.cities);     // draw initialization of diagram
                 
                 buf.close();    // close buffer
             } catch (Exception ex) {
@@ -274,7 +300,11 @@ public class mainFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_openActionPerformed
-
+    
+    public void test(){
+        
+    }
+    
     private void runGAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runGAActionPerformed
         // TODO add your handling code here:
         if(this.maxGenText.getText().isEmpty()){    // if maxGenText Text Field is Empty
@@ -283,12 +313,38 @@ public class mainFrame extends javax.swing.JFrame {
         else{   // if maxGenText Text Field is not Empty
             String maxGenStr = this.maxGenText.getText();
             try{
-                int maxGen = Integer.parseInt(maxGenStr);
+                this.maxGen = Integer.parseInt(maxGenStr);
+                this.currentGen += 1;
+                this.jLabel5.setText(this.currentGen+"");
+                this.repaint();
+                if(this.currentGen < this.maxGen){Thread.sleep(500); this.runGAActionPerformed(evt);}
+                //println("the best path: "+TSP.bestPath.distance);
+                //for(int i=0; i<=maxGen; i++){
+                    //println(i);
+                    //this.jLabel5.setText(i+"");
+                    
+                    //TSP.newPopulation = TSP.population;
+                    //TSP.select();
+                    //TSP.crossover();
+                    //TSP.mutation();
+                    //println(i+" Before: "+TSP.population);
+                    //TSP.updatePop();
+                    //TSP.findBestPath();
+                    //println(i+" After: "+TSP.population);
+                    //println("the best path: "+TSP.bestPath.distance);
+                    //println("good path: "+TSP.goodPath.distance);
+                    //this.updateCityDraw();
+                //}
+                //println("the best path: "+TSP.bestPath.distance);
             }catch(Exception e){    // not fill integer in maxGenText Text Field
                 JOptionPane.showMessageDialog(this, "Please fill Maximum Generation is number!!!");
             }
         }
     }//GEN-LAST:event_runGAActionPerformed
+
+    private void runGAStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_runGAStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_runGAStateChanged
 
     /**
      * @param args the command line arguments
@@ -328,6 +384,8 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -340,17 +398,25 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JButton runGA;
     // End of variables declaration//GEN-END:variables
 
-    private void initDraw(ArrayList<City> cities) {
+    private void initCityDraw(ArrayList<City> cities) {
         jPanel1.setVisible(false);
         cityPanel.cities = TSP.cities;
         cityPanel.population = TSP.population;
-        cityPanel.bestPath = TSP.population.get(1);
-        cityPanel.goodPath = TSP.population.get(0);
-        cityPanel.setPreferredSize(new Dimension(500, 500));   // set size of new panel
-        cityPanel.setOpaque(false);
+        cityPanel.bestPath = TSP.bestPath;
+        cityPanel.goodPath = TSP.goodPath;
         jPanel1.add(cityPanel, BorderLayout.CENTER);           // add new panel into jPanel1
         jPanel1.setVisible(true);
-        //cityPanel.setAnimate(); animate
+    }
+    
+    private void updateCityDraw(){
+        jPanel1.setVisible(false);
+        cityPanel.population = TSP.population;
+        cityPanel.bestPath = TSP.bestPath;
+        cityPanel.goodPath = TSP.goodPath;
+        jPanel1.add(cityPanel, BorderLayout.CENTER);           // add new panel into jPanel1
+        cityPanel.startAnimate();
+        cityPanel.stopAnimate();
+        jPanel1.setVisible(true);
     }
     
     // This function is used for extracttion data from input file

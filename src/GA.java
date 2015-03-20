@@ -8,6 +8,7 @@ public class GA {
     public ArrayList<Path> newPopulation;   // for keep new population in next generation
     public Path bestPath;                   // fot keep the best Path
     public Path goodPath;                   // for keep good path in current generation
+    public double avgDistance;              // for keep average distance of generation
     
     public GA(){
         this.cities = new ArrayList<City>();
@@ -45,11 +46,10 @@ public class GA {
         double F=0;
         int N = this.population.size();
         if(N == 0 || N == 1 || N ==2 || N==3){
-            println("should have more than 3 citys.");
             return;}
         // cal sum of fitness
-        ArrayList<Path> keep = new ArrayList<>();
-        ArrayList<Double> allFitness = new ArrayList<>();
+        ArrayList<Path> keep = new ArrayList<Path>();
+        ArrayList<Double> allFitness = new ArrayList<Double>();
         double cmax = this.calCmax();  // generate Cmax for calulate fitness.
         // add all fitness to allFitness value.
         for(Path p:this.population){  // access each path from population.
@@ -202,7 +202,6 @@ public class GA {
         }
 
         this.newPopulation = keep;
-        println("Fitness size : "+ allFitness.size());
     }
     
     // This function for crossover form PMX  for new population in next generation
@@ -226,18 +225,13 @@ public class GA {
             point1 = 0; // reset point 1
             point2 = 0; // reset point 2
             index = 0;  // reset index
-            println("Crossover " + ++time); // display times for crossover
+            time++;
             P1 = newPopulation.get((int) (Math.random() * newPopulation.size()));   // random parent 1 from population
             P2 = newPopulation.get((int) (Math.random() * newPopulation.size()));   // random parent 2 from population
-            println("P1 : " + P1.toString());   // display parent 1
-            println("P2 : " + P2.toString());   // display parent 2
             popCross = (int) (Math.random() * 100); // random probability value    range of probability value 0 - 99
-            println("Pop = " + popCross);   // display probability value
             if(popCross > 79) { // not crossover
                 newGen.add(P1); // add parent 1 in new generation
                 newGen.add(P2); // add parent 2 in new generation
-                println("C1 : " + P1);  // display parent 1 that add in new generation
-                println("C2 : " + P2);  // display parent 2 that add in new generation
             } else { // crossover
                 while(point1 == point2) { // random point for PMX crossover
                     point1 = (int) (Math.random() * P1.path.size());    // random point 1 for PMX crossover
@@ -248,8 +242,6 @@ public class GA {
                     point1 = point2;    // swap value of point 1 with point 2
                     point2 = point;
                 }
-                println("Point1 = " + point1);  // display point 1 for PMX crossover
-                println("Point2 = " + point2);  // display point 2 for PMX crossover
                 for(int i = 0; i < P1.path.size(); i++) {   // add default city in child 1, 2
                     C1.path.add(initCity);  // add default city in child 1
                     C2.path.add(initCity);  // add default city in child 2
@@ -280,8 +272,6 @@ public class GA {
                 }
                 newGen.add(C1); // add child 1 in new generation
                 newGen.add(C2); // add child 2 in new generation
-                println("C1 : " + C1);  // display child 1 that add in new generation
-                println("C2 : " + C2);  // display child 2 that add in new generation
             }
         }
         newPopulation = newGen; // store new generation from crossover in newPopulation
@@ -303,8 +293,7 @@ public class GA {
         int point1 = 0, point2 = 0;                     // create Object for pointer point where will flip
         double Ran = 0;                                 // create Object for save MATH.RANDOM()
         for (int i = 0 ; i < this.newPopulation.size() ; i++){
-            Ran = Math.random();                        // Random math for ค่าโอกาศเกิด
-            println ("prop "+Ran);                      
+            Ran = Math.random();                        // Random math for ค่าโอกาศเกิด                 
             if (Ran <= 0.1){                            
                 onePath = this.newPopulation.get(i);    // Add newPopulation into onePath
                 while(point1 == point2) {               // Check same pointer (at first 0 = 0)
@@ -345,13 +334,11 @@ public class GA {
         double keep = 0.0;                                  // create object for keep path for check 
         for(int i = 0 ; i < this.population.size() ; i++){  // check every path in population
             this.population.get(i).calDistance();           // calculate distance
-            println("Distance "+i+" "+this.population.get(i).distance);
             if(keep == 0.0){                                // check keep is empty or not
                 keep = this.population.get(i).distance ;    // get path into keep
                 this.goodPath = this.population.get(i);     // get pop to goodpath
             }
-            else{
-                println("keep dis "+i+" "+keep);            
+            else{       
                 if(this.population.get(i).distance < keep){ // check path for check is more than new path 
                     keep = this.population.get(i).distance ;// get path into keep
                     this.goodPath = this.population.get(i); // get pop to goodpath
@@ -366,20 +353,10 @@ public class GA {
         if(this.bestPath.distance > this.goodPath.distance){// check bestpath more than goodpath or not
             this.bestPath = this.goodPath;                  // get good path into bestpath
         }
-        // for Test check goodpath bestpath ... 
-        this.goodPath.calDistance();                                
-        this.bestPath.calDistance();                                
-        println("BestPaht is "+this.bestPath.distance);             
-        println("GoodPath is "+this.goodPath.distance);            
     }
     
     private double calCmax(){
-        double Cmax=0;                  // create variable for output of function
-        for(Path p:this.population){    // each path in population
-            p.calDistance();            // calculate distance of each path
-            if(p.distance > Cmax) Cmax = p.distance;    // update Cmax value
-        }
-        return Cmax;    // return Cmax value
+        return Integer.MAX_VALUE;    // return Cmax value
     }
     
     public void createCity(ArrayList<ArrayList> datas){
@@ -400,15 +377,27 @@ public class GA {
     }
     
     public static void main(String[] args) {
-        /*GA test = new GA();
-        for(int i = 0; i < 8; i++)
-            test.cities.add(new City(i, 12, 12));
+        GA test = new GA();
+        for(int i = 0; i < 6; i++)
+            test.cities.add(new City(i, i+0.1, i+0.1));
         test.initPopulation();
-        for(Path P:test.population) {
+        /*for(Path P:test.population) {
             println(P);
-        } */
+        }*/
+        for(int i=0; i<500000; i++){
+            test.select();
+            test.crossover();
+            test.mutation();
+            test.updatePop();
+            /*println(i+": "+test.population.size());
+            for(Path p:test.population){
+                println(p);
+            }*/
+        }
+        println("Finished!!!");
         
         /// KUNG \\\
+        /*
         Path travel;
         GA test = new GA();
         int numCity = 8, numPath = 6; 
@@ -452,7 +441,7 @@ public class GA {
         }
         /// Boss \\\
         GA test3 = new GA();
-        int position[][] = {{1,2}, {30,5}, {24,46}, {34, 56}, {73, 43}, {34, 12}, {64, 27}, {90, 45}, {43, 62}};
+        double position[][] = {{1.0,2}, {30,5}, {24,46}, {34, 56}, {73, 43}, {34, 12}, {64, 27}, {90, 45}, {43, 62}};
         for(int i = 0; i < position.length; i++)
             test3.cities.add(new City(i, position[i][0], position[i][1]));
         test3.initPopulation();
@@ -467,7 +456,7 @@ public class GA {
         for(Path v:test3.newPopulation){
             println(v);
         }
-        println("Number of new population: "+test3.newPopulation.size());
+        println("Number of new population: "+test3.newPopulation.size());*/
     }
     
 }
