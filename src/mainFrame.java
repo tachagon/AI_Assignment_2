@@ -1,4 +1,5 @@
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -15,8 +16,13 @@ import java.util.stream.Stream;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -38,8 +44,15 @@ public class mainFrame extends javax.swing.JFrame {
      * Creates new form mainFrame
      */
     public GA TSP;  // Object for Travelling Salesman Problem
-    public DrawDiagram cityPanel;  // create new panel for draw diagram
-    public int maxGen=0, currentGen=0;
+    public DrawDiagram cityPanel;   // create new panel for draw city diagram
+    public DrawGraph graphPanel;    // create new panel for draw graph
+    private ArrayList<ArrayList> datas = new ArrayList<ArrayList>();    // for keep data from TSP file
+    private ArrayList<Double> avgDistance;      // keep average distance of each generation
+    private ArrayList<Double> betterDistance;   // keep the best distance of each generation
+    private ArrayList<Double> bestDistance;     // keep the best distance of every generation
+    private String writeFile;
+    public int maxGen=0, currentGen=0;          // used control number of work in GA
+    Path theBest;   // keep path is the best of every generation
     
     public mainFrame() {
         initComponents();
@@ -57,7 +70,6 @@ public class mainFrame extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         open = new javax.swing.JButton();
         nameText = new javax.swing.JTextField();
@@ -67,8 +79,20 @@ public class mainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         maxGenText = new javax.swing.JTextField();
         runGA = new javax.swing.JButton();
+        resetGA = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        optimumDistanceLabel = new javax.swing.JLabel();
+        currentDistanceLabel = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        maxGenLabel = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        maxDistanceLabel = new javax.swing.JLabel();
+        minDistanceLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Travelling Saleman Problem GA");
@@ -76,8 +100,8 @@ public class mainFrame extends javax.swing.JFrame {
         setBounds(new java.awt.Rectangle(0, 0, 1070, 620));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
-        setMinimumSize(new java.awt.Dimension(1118, 690));
-        setPreferredSize(new java.awt.Dimension(1118, 690));
+        setMinimumSize(new java.awt.Dimension(1180, 690));
+        setPreferredSize(new java.awt.Dimension(1150, 650));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel5.setBackground(new java.awt.Color(177, 220, 248));
@@ -91,32 +115,7 @@ public class mainFrame extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jPanel2.setPreferredSize(new java.awt.Dimension(500, 250));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 250, Short.MAX_VALUE)
-        );
-
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jPanel3.setPreferredSize(new java.awt.Dimension(500, 250));
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 250, Short.MAX_VALUE)
-        );
+        jPanel2.setLayout(new java.awt.BorderLayout());
 
         jPanel4.setBackground(new java.awt.Color(177, 220, 248));
         jPanel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -161,6 +160,19 @@ public class mainFrame extends javax.swing.JFrame {
             }
         });
 
+        resetGA.setText("Stop GA");
+        resetGA.setEnabled(false);
+        resetGA.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                resetGAStateChanged(evt);
+            }
+        });
+        resetGA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetGAActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -182,7 +194,9 @@ public class mainFrame extends javax.swing.JFrame {
                 .addComponent(maxGenText, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(runGA)
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(resetGA)
+                .addContainerGap(233, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,7 +210,8 @@ public class mainFrame extends javax.swing.JFrame {
                     .addComponent(open)
                     .addComponent(jLabel3)
                     .addComponent(maxGenText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(runGA))
+                    .addComponent(runGA)
+                    .addComponent(resetGA))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -205,48 +220,127 @@ public class mainFrame extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel6.setText("Optimum Distance:");
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel7.setText("Current Distance:");
+
+        optimumDistanceLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        currentDistanceLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel8.setText("Graph");
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel9.setText("Generation NO.");
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel10.setText("0");
+
+        maxGenLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        maxGenLabel.setText("MAX GEN");
+        maxGenLabel.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+
+        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel12.setText("Distance");
+
+        maxDistanceLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        minDistanceLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
+                        .addContainerGap()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(65, 65, 65)
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(currentDistanceLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(239, 239, 239)
+                        .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(optimumDistanceLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(maxDistanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(minDistanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel9)
+                                .addGap(175, 175, 175)
+                                .addComponent(maxGenLabel)
+                                .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(266, 266, 266))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(10, 10, 10)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(optimumDistanceLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel7)
+                    .addComponent(currentDistanceLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(43, 43, 43)
+                        .addComponent(jLabel8)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(maxDistanceLabel)
+                                .addGap(98, 98, 98)
+                                .addComponent(jLabel12)
+                                .addGap(100, 100, 100)
+                                .addComponent(minDistanceLabel))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(17, 17, 17))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 35, 35)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                            .addComponent(jLabel9)
+                            .addComponent(maxGenLabel)
+                            .addComponent(jLabel10))))
+                .addGap(28, 28, 28))
         );
 
         jPanel1.getAccessibleContext().setAccessibleName("");
 
-        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1100, 650));
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1160, 650));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -277,22 +371,27 @@ public class mainFrame extends javax.swing.JFrame {
                 BufferedReader buf = new BufferedReader(new InputStreamReader(new FileInputStream(file.getSelectedFile())));
                 ArrayList<String> datasTemp = new ArrayList<String>();
                 String data = buf.readLine();
-                while(data != null){    // read data each line
+                while(data != null){        // read data each line
                     datasTemp.add(data);    // keep data each line into ArrayList
                     data = buf.readLine();
                 }
                 nameText.setText(datasTemp.get(0).split(": ")[1]);      // show name of problem in text field
                 numCityText.setText(datasTemp.get(3).split(": ")[1]);   // show number of city of problem in text field
+                
                 maxGenText.setEnabled(true);    // enable text field for received number of max generation
                 runGA.setEnabled(true);         // enable Run GA button
+                resetGA.setEnabled(false);      // disable Stop GA button
+                
                 cityPanel = new DrawDiagram();  // create new panel for draw City
-                cityPanel.setPreferredSize(new Dimension(500, 500));   // set size of new panel
+                cityPanel.setPreferredSize(new Dimension(500, 500));    // set size of diagram panel
                 cityPanel.setOpaque(false);
-                ArrayList<ArrayList> datas = extract(datasTemp);
-                TSP = new GA();
-                TSP.createCity(datas);
-                TSP.initPopulation();
-                initCityDraw(TSP.cities);     // draw initialization of diagram
+                
+                graphPanel = new DrawGraph();   // create new panel for draw graph
+                graphPanel.setPreferredSize(new Dimension(550, 300));   // set size of graph panel
+                graphPanel.setOpaque(false);
+                
+                datas = extract(datasTemp);     // get data from file to ArrayList
+                this.initTSP();                 // start GA for solve TSP
                 
                 buf.close();    // close buffer
             } catch (Exception ex) {
@@ -300,10 +399,6 @@ public class mainFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_openActionPerformed
-    
-    public void test(){
-        
-    }
     
     private void runGAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runGAActionPerformed
         // TODO add your handling code here:
@@ -313,29 +408,10 @@ public class mainFrame extends javax.swing.JFrame {
         else{   // if maxGenText Text Field is not Empty
             String maxGenStr = this.maxGenText.getText();
             try{
-                this.maxGen = Integer.parseInt(maxGenStr);
-                this.currentGen += 1;
-                this.jLabel5.setText(this.currentGen+"");
-                this.repaint();
-                if(this.currentGen < this.maxGen){Thread.sleep(500); this.runGAActionPerformed(evt);}
-                //println("the best path: "+TSP.bestPath.distance);
-                //for(int i=0; i<=maxGen; i++){
-                    //println(i);
-                    //this.jLabel5.setText(i+"");
-                    
-                    //TSP.newPopulation = TSP.population;
-                    //TSP.select();
-                    //TSP.crossover();
-                    //TSP.mutation();
-                    //println(i+" Before: "+TSP.population);
-                    //TSP.updatePop();
-                    //TSP.findBestPath();
-                    //println(i+" After: "+TSP.population);
-                    //println("the best path: "+TSP.bestPath.distance);
-                    //println("good path: "+TSP.goodPath.distance);
-                    //this.updateCityDraw();
-                //}
-                //println("the best path: "+TSP.bestPath.distance);
+                this.maxGen = Integer.parseInt(maxGenStr);  // get maximum generation value as integer
+                this.runGA.setEnabled(false);               // disable Run GA button
+                this.resetGA.setEnabled(true);              // enable Stop GA button
+                this.updateCityDraw();                      // start animate draw city and run GA
             }catch(Exception e){    // not fill integer in maxGenText Text Field
                 JOptionPane.showMessageDialog(this, "Please fill Maximum Generation is number!!!");
             }
@@ -345,6 +421,23 @@ public class mainFrame extends javax.swing.JFrame {
     private void runGAStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_runGAStateChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_runGAStateChanged
+
+    private void resetGAStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_resetGAStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_resetGAStateChanged
+    
+    private void resetGAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetGAActionPerformed
+        // TODO add your handling code here:
+        if(this.currentGen < this.maxGen){
+            this.currentGen = this.maxGen;
+            this.resetGA.setText("Reset GA");
+        }else{
+            this.initTSP();
+            this.runGA.setEnabled(true);
+            this.resetGA.setEnabled(false);
+            this.resetGA.setText("Stop GA");
+        }
+    }//GEN-LAST:event_resetGAActionPerformed
 
     /**
      * @param args the command line arguments
@@ -381,42 +474,94 @@ public class mainFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel currentDistanceLabel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JLabel maxDistanceLabel;
+    private javax.swing.JLabel maxGenLabel;
     private javax.swing.JTextField maxGenText;
+    private javax.swing.JLabel minDistanceLabel;
     private javax.swing.JTextField nameText;
     private javax.swing.JTextField numCityText;
     private javax.swing.JButton open;
+    private javax.swing.JLabel optimumDistanceLabel;
+    private javax.swing.JButton resetGA;
     private javax.swing.JButton runGA;
     // End of variables declaration//GEN-END:variables
-
-    private void initCityDraw(ArrayList<City> cities) {
+    
+    private void initTSP(){
+        this.avgDistance = new ArrayList<Double>();     // keep average distance each generation
+        this.betterDistance = new ArrayList<Double>();  // keep the best distance each generation
+        this.bestDistance = new ArrayList<Double>();    // keep the best distance in every generation
+        this.theBest = new Path();  // keep the best path of all evolution
+        
+        TSP = new GA();             // create TSP object
+        TSP.createCity(datas);      // create all City object
+        TSP.initPopulation();       // create initial population
+        this.avgDistance.add(TSP.avgDistance());    // add average distance of initialization
+        
+        Path betterPath = new Path();   // use for keep the best path of current population
+        betterPath = TSP.getBestPath(); // get the best path of current population
+        this.betterDistance.add(betterPath.distance);   // add best distance of initialization
+        this.theBest = betterPath;      // set the best path in first population
+        this.bestDistance.add(this.theBest.distance);   // add the best distance
+        
+        this.writeFile = "Gen No, Best Tout Length, Average Tour Length, Best Chromosome\r\n";
+        this.writeFile += "Init, "+theBest.distance+", "+TSP.avgDistance()+", "+theBest+"\r\n";
+        
+        this.maxGen = 0;            // reset maximum generation value
+        this.currentGen = 0;        // reset current generation value
+        
+        jLabel5.setText("Initial"); // set text in jLabel5
+        optimumDistanceLabel.setText(this.theBest.distance+"");
+        currentDistanceLabel.setText(betterPath.distance+"");
+        
+        this.maxGenLabel.setText("MAX GEN");
+        this.minDistanceLabel.setText("");
+        this.maxDistanceLabel.setText("");
+        System.out.println("Ready to Start GA.");
+        initDraw(TSP.cities);       // draw initialization
+    }
+    
+    private void initDraw(ArrayList<City> cities) {
         jPanel1.setVisible(false);
-        cityPanel.cities = TSP.cities;
-        cityPanel.population = TSP.population;
-        cityPanel.bestPath = TSP.bestPath;
-        cityPanel.goodPath = TSP.goodPath;
-        jPanel1.add(cityPanel, BorderLayout.CENTER);           // add new panel into jPanel1
+        jPanel1.add(cityPanel, BorderLayout.CENTER);    // add diagram panel into jPanel1
         jPanel1.setVisible(true);
+        
+        jPanel2.setVisible(false);
+        jPanel2.add(graphPanel, BorderLayout.CENTER);   // add graph panel into jPanel2
+        jPanel2.setVisible(true);
     }
     
     private void updateCityDraw(){
         jPanel1.setVisible(false);
-        cityPanel.population = TSP.population;
-        cityPanel.bestPath = TSP.bestPath;
-        cityPanel.goodPath = TSP.goodPath;
         jPanel1.add(cityPanel, BorderLayout.CENTER);           // add new panel into jPanel1
         cityPanel.startAnimate();
-        cityPanel.stopAnimate();
         jPanel1.setVisible(true);
+    }
+    
+    public static void writeText(String filename, String content){
+        try{
+            PrintWriter pw = new PrintWriter(filename, "UTF-8");
+            pw.printf(content);
+            pw.close();
+            System.out.println("Write " + filename + " Done");
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
     
     // This function is used for extracttion data from input file
@@ -445,5 +590,241 @@ public class mainFrame extends javax.swing.JFrame {
     }
     private void print(Object obj){
         System.out.print(obj.toString());
+    }
+    
+    class DrawDiagram extends JPanel implements ActionListener{
+        Timer tm = new Timer(0, this);
+        Path betterPath;
+        private double Xmax=0, Ymax=0;
+        private int r = 10;
+        
+        @Override
+        public void paintComponent(Graphics g){         // draw diagram
+            if(currentGen == 0){
+                findXYmax();
+                this.drawPath(g);
+            }
+            if(currentGen < maxGen || maxGen == 0){this.drawPath(g);}
+            else {this.drawBestPath(g);}
+            this.drawCity(g);
+        }
+        
+        private void findXYmax(){
+            for(City c:TSP.cities){
+                if(c.x > Xmax) Xmax = c.x;  // find maximum x value
+                if(c.y > Ymax) Ymax = c.y;  // find maximum y value
+            }
+        }
+        
+        private void drawPath(Graphics g){
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setColor(new Color(255, 215, 0));
+            betterPath = TSP.getBestPath();
+            for(int i=0; i<betterPath.path.size(); i++){    // if Path is good in this generation
+                City c = betterPath.path.get(i);            // get current City
+                City cn;                                    // get next City
+                if(i < betterPath.path.size()-1){cn = betterPath.path.get(i+1);}  // if City is not last City
+                else{cn = betterPath.path.get(0);}          // City is last City
+                // draw line of path is good
+                g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2d.drawLine((int)(c.x*490/Xmax+(r/2)), (int)(c.y*490/Ymax+(r/2)), (int)(cn.x*490/Xmax+(r/2)), (int)(cn.y*490/Ymax+(r/2)));
+            }
+        }
+        
+        private void drawBestPath(Graphics g){
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setColor(new Color(50, 205, 50));
+            for(int i=0; i<theBest.path.size(); i++){   // if Path is good in this generation
+                City c = theBest.path.get(i);           // get current City
+                City cn;                                // get next City
+                if(i < theBest.path.size()-1){cn = theBest.path.get(i+1);}  // if City is not last City
+                else{cn = theBest.path.get(0);}         // City is last City
+                // draw line of path is good
+                g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2d.drawLine((int)(c.x*490/Xmax+(r/2)), (int)(c.y*490/Ymax+(r/2)), (int)(cn.x*490/Xmax+(r/2)), (int)(cn.y*490/Ymax+(r/2)));
+            }
+        }
+        
+        private void drawCity(Graphics g){
+            for(City c:TSP.cities){
+                g.setColor(new Color(205, 92, 92));    // set color for outter circle
+                int x=0, y=0;
+                x = (int)(c.x*490/Xmax);    // calculate x position for draw circle
+                y = (int)(c.y*490/Ymax);    // calculate y position fot draw circle
+                g.fillOval(x, y, r, r);     // draw outter circle
+                g.setColor(new Color(255, 106, 106));   // set new color fot inner circle
+                g.fillOval(x, y, r-2, r-2); // draw inner circle
+            }
+        }
+        
+        public void startAnimate(){ // is used for start animate
+            tm.start();
+        }
+        
+        public void stopAnimate(){  // is used fot stop animate
+            tm.stop();
+        }
+        
+        public void actionPerformed(ActionEvent e){ // update something for animate
+            if(currentGen < maxGen){    // run until the maximum generation
+                currentGen += 1;        // update number current generation
+                jLabel5.setText(currentGen+""); // show current generation in jLabel5
+                
+                TSP.select();       // selection current population to new population
+                TSP.crossover();    // crossover population that is selected
+                TSP.mutation();     // mutation population that is crossovered
+                TSP.updatePop();    // update current population is new population
+                
+                betterPath = new Path();
+                betterPath = TSP.getBestPath(); // find the best population in current generation
+                // find the best population in every generation
+                if(betterPath != null)theBest = theBest.minDistance(betterPath);
+                betterDistance.add(betterPath.distance);// save the best distance of current generation
+                bestDistance.add(theBest.distance);     // save the best distance of every generation
+                avgDistance.add(TSP.avgDistance());     // save average distance of current generation
+                
+                writeFile += currentGen + ", " + theBest.distance + ", " + TSP.avgDistance() + ", " + theBest + "\r\n";
+                
+                DecimalFormat decim = new DecimalFormat("#.0000");
+                // show the best distance of every generation in label
+                optimumDistanceLabel.setText(decim.format(theBest.distance));
+                // show the best distance of current generation in label
+                currentDistanceLabel.setText(decim.format(betterPath.distance));
+                resetGA.setText("Stop GA");
+                
+                graphPanel.startAnimate();
+            }else{
+                System.out.println("GA Finished And Stop!!!");
+                resetGA.setText("Reset GA");
+                this.stopAnimate();
+                graphPanel.stopAnimate();
+                writeText("resultGA.csv", writeFile);
+            }
+            repaint();
+        }
+    }
+    
+    class DrawGraph extends JPanel implements ActionListener{
+        Timer tm = new Timer(0, this);
+        final int WIDTH = 550;
+        final int HEIGHT = 300;
+        double Ymax = 0, Ymin = Double.MAX_VALUE;
+        
+        @Override
+        public void paintComponent(Graphics g){         // draw diagram
+            this.drawGrid(g);
+            findYMinMax();
+            this.drawDistanceGraph(g);
+        }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            findYMinMax();
+            repaint();
+        }
+        
+        private void findYMinMax(){
+            double max = 0, min = Double.MAX_VALUE;
+            for(int i=0; i<betterDistance.size(); i++){
+                max = Double.max(max, betterDistance.get(i));
+                max = Double.max(max, avgDistance.get(i));
+                max = Double.max(max, bestDistance.get(i));
+                min = Double.min(min, betterDistance.get(i));
+                min = Double.min(min, avgDistance.get(i));
+                min = Double.min(min, bestDistance.get(i));
+            }
+            Ymax = max;
+            Ymin = min;
+        }
+        
+        private void drawDistanceGraph(Graphics g){
+            int Xmax = betterDistance.size();
+            if(Xmax > 1){
+                maxGenLabel.setText((Xmax-1)+"");
+                DecimalFormat decim = new DecimalFormat("#.00");
+                // show minimum distance in graph
+                maxDistanceLabel.setText(decim.format(Ymax));
+                // show maximum distance in graph
+                minDistanceLabel.setText(decim.format(Ymin));
+                
+                Graphics2D g2d = (Graphics2D) g.create();   // create graphic 2D
+                g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                double x = 0;
+                for(int i=1; i<betterDistance.size(); i++){
+                    double x1 = x;
+                    double y1 = (double)(HEIGHT - this.changeScale(betterDistance.get(i-1)));
+                    x += (double)WIDTH/Xmax;
+                    double x2 = x;
+                    double y2 = (double)(HEIGHT - this.changeScale(betterDistance.get(i)));
+                    
+                    g2d.setColor(Color.red);
+                    g2d.drawLine((int)x1, (int)y1, (int)x2, (int)y2);   // draw line of better Distance
+                    
+                    y1 = (double)(HEIGHT - this.changeScale(bestDistance.get(i-1)));
+                    y2 = (double)(HEIGHT - this.changeScale(bestDistance.get(i)));
+                    g2d.setColor(Color.green);
+                    g2d.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+                    
+                    y1 = (double)(HEIGHT - this.changeScale(avgDistance.get(i-1)));
+                    y2 = (double)(HEIGHT - this.changeScale(avgDistance.get(i)));
+                    g2d.setColor(Color.orange);
+                    g2d.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+                }
+            }
+        }
+        
+        private double changeScale(double data){
+            final double MinScale = HEIGHT*0.2, MaxScale = HEIGHT;
+            double a = (MaxScale - MinScale)/(Ymax - Ymin);
+            double b = MinScale - (Ymin * a);
+            return (data*a) + b;
+        }
+        
+        private void drawGrid(Graphics g){
+            final int gap = 10;
+            Graphics2D g2d = (Graphics2D) g.create();   // create graphic 2D
+            g2d.setColor(new Color(207, 207, 207));     // set color for draw grid
+            g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            int x1=0, y1=0, x2=0, y2=280;       // coordinate for draw line
+            for(int i=0; i<(WIDTH/gap); i++){   // draw line in vertical
+                g2d.drawLine(x1, y1, x2, y2);
+                x1 += gap;
+                x2 += gap;
+            }
+            x1=y2=0;
+            x2=550;
+            for(int i=0; i<(HEIGHT-20)/gap; i++){    // draw line in hoeizontal
+                g2d.drawLine(x1, y1, x2, y2);
+                y1 += gap;
+                y2 += gap;
+            }
+            
+            g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            
+            g2d.setColor(Color.orange);
+            g2d.drawLine(10, 290, 40, 290);
+            g2d.setFont(new Font("Serif", Font.PLAIN, 12));
+            g2d.setColor(Color.black);
+            g2d.drawString("AVG Distance", 45, 295);
+            
+            g2d.setColor(Color.red);
+            g2d.drawLine(120, 290, 150, 290);
+            g2d.setColor(Color.black);
+            g2d.drawString("The best Distance each population", 155, 295);
+            
+            g2d.setColor(Color.green);
+            g2d.drawLine(330, 290, 360, 290);
+            g2d.setColor(Color.black);
+            g2d.drawString("The best Distance every population", 365, 295);
+        }
+        
+        public void startAnimate(){ // is used for start animate
+            tm.start();
+        }
+        
+        public void stopAnimate(){  // is used fot stop animate
+            tm.stop();
+        }
+        
     }
 }

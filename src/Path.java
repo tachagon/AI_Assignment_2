@@ -35,52 +35,31 @@ public class Path {
     // This function is used for calculate total distance of path
     public void calDistance(){
         // Calculate distance from city to city
-        double x = 0 ;
-        for(int i = 0 ; i < this.path.size() ; i++){ //number city
-            if (i < this.path.size()-1){
-                x = x + this.path.get(i).distanceTo(this.path.get(i+1));}//calculate distance to another city
-            else{
-                x = x + this.path.get(i).distanceTo(this.path.get(0));}//calculate distance back to first city
-            
+        if(this.path.size() > 0){
+            double x = 0 ;
+            for(int i = 0 ; i < this.path.size() ; i++){ //number city
+                if (i < this.path.size()-1){
+                    x = x + this.path.get(i).distanceTo(this.path.get(i+1));}//calculate distance to another city
+                else{
+                    x = x + this.path.get(i).distanceTo(this.path.get(0));}//calculate distance back to first city
+                
+            }
+            this.distance = x;
         }
-        this.distance =x;
+    }
+    
+    public Path minDistance(Path comparator){
+        this.calDistance();
+        comparator.calDistance();
+        if(comparator.distance < this.distance || this.distance == -1)return comparator;
+        else return this;
     }
     
     public String toString(){
-        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        StringJoiner sj = new StringJoiner(", ", "", "");
         for(City c:this.path){
           sj.add(c.toString());
         }
         return sj.toString();
-    }
-    
-    public static void main(String[] args){
-        City x1 = new City(1, 0.0, 0.0);
-        City x2 = new City(2, 0.0, 10.0);
-        City x3 = new City(3, 5.0, 10.0);
-        City x4 = new City(4, 5.0, 20.0);
-        City x5 = new City(5, 10.0, 20.0);
-        City x6 = new City(6, 10.0, 0.0);
-        
-        Path p12 = new Path();
-        ArrayList<City> li1 = new ArrayList<City>();
-        li1.add(x1);
-        li1.add(x2);
-        li1.add(x3);
-        li1.add(x4);
-        li1.add(x5);
-        li1.add(x6);
-        
-        System.out.println(x1.distanceTo(x2));
-        System.out.println(x2.distanceTo(x3));
-        System.out.println(x3.distanceTo(x4));
-        System.out.println(x4.distanceTo(x5));
-        System.out.println(x5.distanceTo(x6));
-        System.out.println(x6.distanceTo(x1));
-        
-        p12.path = li1;
-        p12.calDistance();
-        System.out.println(p12.distance);
-        
     }
 }
