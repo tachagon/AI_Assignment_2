@@ -197,10 +197,10 @@ public class GA {
         this.newPopulation = keep;
     }
     
-        // This function for crossover form PMX  for new population in next generation
-        // 1. use this.newPopulation for crossover
-        // 2. random Probability value for crossover
-        // 3. random 2 position for PMX crossover
+    // This function for crossover form PMX  for new population in next generation
+    // 1. use this.newPopulation for crossover
+    // 2. random Probability value for crossover
+    // 3. random 2 position for PMX crossover
     public void crossover() {
         ArrayList<Path> newGen = new ArrayList<Path>(); // store new population from crossover
         City initCity =  new City(-100, -100, -100);    // default city
@@ -218,19 +218,13 @@ public class GA {
             point1 = 0; // reset point 1
             point2 = 0; // reset point 2
             index = 0;  // reset index
-            ++time;
-            //println("Crossover " + ++time); // display times for crossover
+            time++;
             P1 = newPopulation.get((int) (Math.random() * newPopulation.size()));   // random parent 1 from population
             P2 = newPopulation.get((int) (Math.random() * newPopulation.size()));   // random parent 2 from population
-            //println("P1 : " + P1.toString());   // display parent 1
-            //println("P2 : " + P2.toString());   // display parent 2
             popCross = (int) (Math.random() * 100); // random probability value    range of probability value 0 - 99
-            //println("Pop = " + popCross);   // display probability value
             if(popCross > 79) { // not crossover
                 newGen.add(P1); // add parent 1 in new generation
                 newGen.add(P2); // add parent 2 in new generation
-                //println("C1 : " + P1);  // display parent 1 that add in new generation
-                //println("C2 : " + P2);  // display parent 2 that add in new generation
             } else { // crossover
                 while(point1 == point2) { // random point for PMX crossover
                     point1 = (int) (Math.random() * P1.path.size());    // random point 1 for PMX crossover
@@ -241,8 +235,6 @@ public class GA {
                     point1 = point2;    // swap value of point 1 with point 2
                     point2 = point;
                 }
-                //println("Point1 = " + point1);  // display point 1 for PMX crossover
-                //println("Point2 = " + point2);  // display point 2 for PMX crossover
                 for(int i = 0; i < P1.path.size(); i++) {   // add default city in child 1, 2
                     C1.path.add(initCity);  // add default city in child 1
                     C2.path.add(initCity);  // add default city in child 2
@@ -255,22 +247,24 @@ public class GA {
                 }
                 while(C1.path.indexOf(initCity) != -1) { // operate in while loop when have default city
                     index = C1.path.indexOf(initCity);  // find index of default city
-                    int numCity = (int) (Math.random() * cities.size());    // random name city for replace default city in child 1
-                    City newCity = cities.get(numCity); // store new city from random city
-                    if(C1.path.indexOf(newCity) == -1) // No have new city in child 1
-                        C1.path.set(index, newCity);    // set new city replace default city
+                    for(int i = 0; i < cities.size(); i++) {    // find new city
+                        if(C1.path.indexOf(cities.get(i)) == -1) {  // No have new city in child 1
+                            C1.path.remove(index);  // remove default city at index
+                            C1.path.add(index, cities.get(i));  // add new city at index 
+                        }
+                    }
                 }
                 while(C2.path.indexOf(initCity) != -1) { // operate in while loop when have default city
                     index = C2.path.indexOf(initCity);  // find index of default city
-                    int numCity = (int) (Math.random() * cities.size());    // random name city for replace default city in child 2
-                    City newCity = cities.get(numCity); // store new city from random city
-                    if(C2.path.indexOf(newCity) == -1) // No have new city in child 2
-                        C2.path.set(index, newCity);    // set new city replace default city
+                    for(int i = 0; i < cities.size(); i++) {    // find new city
+                        if(C2.path.indexOf(cities.get(i)) == -1) {  // No have new city in child 2
+                            C2.path.remove(index);  // remove default city at index
+                            C2.path.add(index, cities.get(i));  // add new city at index 
+                        }
+                    }
                 }
                 newGen.add(C1); // add child 1 in new generation
                 newGen.add(C2); // add child 2 in new generation
-                //println("C1 : " + C1);  // display child 1 that add in new generation
-                //println("C2 : " + C2);  // display child 2 that add in new generation
             }
         }
         newPopulation = newGen; // store new generation from crossover in newPopulation

@@ -697,7 +697,7 @@ public class mainFrame extends javax.swing.JFrame {
                 resetGA.setText("Reset GA");
                 this.stopAnimate();
                 graphPanel.stopAnimate();
-                writeText("resultGA.csv", writeFile);
+                writeText("resultGA_"+nameText.getText()+".csv", writeFile);
             }
             repaint();
         }
