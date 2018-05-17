@@ -1,6 +1,6 @@
 # Genetic Algorithm
 ### Solve the Travelling Salesman Problem by Genetic Algorithm
-This project is a one of my homework for groups of five people in AI class when I was studying in university.
+This project is one of my homework for groups of five people in AI class when I was studying in university.
 
 ### Details
 * **Input:** tsp file (coordinates of city) 
